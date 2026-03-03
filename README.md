@@ -24,9 +24,6 @@
 
 ## 📸 Screenshots
 
-> 📌 Create a folder named `screenshots` in your project and add your images there.
-
-### 🖥️ Desktop View
 <img width="1920" height="908" alt="image" src="https://github.com/user-attachments/assets/2e0adf97-3a19-40e6-9b95-1c938e14dc87" />
 <img width="1919" height="869" alt="image" src="https://github.com/user-attachments/assets/0aaef8e1-99e8-4c34-83e3-310538b01a5c" />
 
