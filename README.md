@@ -80,13 +80,11 @@
 
 | Category | Technology |
 |----------|------------|
-| Structure | HTML5 |
-| Styling | CSS3 (Custom Variables & Modern Transitions) |
+| Structure | HTML |
+| Styling | CSS (Custom Variables & Modern Transitions) |
 | Framework | Tailwind CSS |
 | Logic | jQuery |
-| Date Handling | Moment.js |
 | API | OpenWeatherMap API |
-| Animations | Animate.css + Custom Cubic-Bezier |
 
 ---
 
