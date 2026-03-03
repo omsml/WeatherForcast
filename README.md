@@ -18,7 +18,7 @@
 ## 🔗 Live Demo
 
 🚀 **Live Website:**  
-👉 https://weatherforcast.netlify.in  
+👉 https://forcastskyview.netlify.app/
 
 ---
 
