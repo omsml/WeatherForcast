@@ -1,5 +1,5 @@
 const config = {
-    apiKey: 'f00c38e0279b7bc85480c3fe775d518c',
+    apiKey: '1234567890', //add your own apikey in here .
     baseUrl: 'https://api.openweathermap.org/data/2.5',
     geoUrl: 'https://api.openweathermap.org/geo/1.0/direct',
     defaultCity: 'Bhubaneswar',
@@ -244,4 +244,5 @@ function renderForecast(list) {
         `);
         container.append(card);
     });
+
 }
