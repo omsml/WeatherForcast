@@ -1,0 +1,246 @@
+/* 1. ROOT VARIABLES & THEME ENGINE */
+:root {
+    --primary: #2563EB;
+    --primary-hover: #1D4ED8;
+    
+    /* Light Mode Tokens */
+    --bg-main: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --text-main: #0f172a;
+    --text-dim: #64748b;
+    --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+
+    /* Fluid Typography & Layout */
+    --temp-size: clamp(4rem, 22vw, 10rem); /* Refined for mobile fitting */
+    --card-radius: 2.5rem;
+    --transition-speed: 0.6s;
+}
+
+/* 2. DARK MODE SYNCHRONIZATION */
+.dark {
+    --bg-main: #0b131e;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --text-main: #f8fafc;
+    --text-dim: #94a3b8;
+    --shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.2);
+}
+
+/* 3. GLOBAL RESET & BASE STYLES */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.4s ease;
+    overflow-x: hidden;
+    line-height: 1.4; /* Slightly tighter for weather displays */
+    width: 100%;
+}
+
+/* 4. RESPONSIVE GLASSMORPHISM */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
+    border-radius: var(--card-radius);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+    width: 100%;
+    overflow: hidden; /* Prevent child overflow */
+}
+
+/* Adjust padding and radius for mobile */
+@media (max-width: 640px) {
+    :root { 
+        --card-radius: 1.75rem;
+        --temp-size: clamp(4.5rem, 30vw, 7rem);
+    }
+    .glass-card { 
+        padding: 1.25rem !important; 
+    }
+}
+
+/* 5. FLUID TYPOGRAPHY & FIXES FOR CLIPPING */
+#city-name {
+    font-size: clamp(1.75rem, 8vw, 4.5rem);
+    word-break: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    line-height: 1.1;
+}
+
+#temperature {
+    font-size: var(--temp-size);
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    font-weight: 800;
+    display: inline-block;
+}
+
+/* 6. SEARCH BAR RESPONSIVENESS */
+#global-search {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+}
+
+@media (max-width: 500px) {
+    #global-search input {
+        padding-right: 1rem !important; /* Remove large padding for hidden button */
+        font-size: 1rem;
+    }
+    #global-search button {
+        position: relative !important;
+        right: auto !important;
+        top: auto !important;
+        transform: none !important;
+        width: auto;
+        padding: 1rem 1.5rem !important;
+        margin-left: 0.5rem;
+        border-radius: 1rem !important;
+    }
+}
+
+/* 7. DISPLAY ADAPTABILITY */
+/* Extra Small Device Adjustments (e.g. iPhone SE) */
+@media (max-width: 380px) {
+    :root { --temp-size: 4rem; }
+    .hero-content { gap: 1rem !important; }
+    #city-name { font-size: 1.5rem; }
+}
+
+/* Tablet Grid Fix */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .forecast-grid { 
+        display: grid;
+        grid-template-columns: repeat(3, 1fr) !important; 
+        gap: 1rem !important;
+    }
+}
+
+/* 4K Scaling */
+@media (min-width: 2000px) {
+    html { font-size: 20px; }
+    .max-w-screen-2xl { max-width: 1800px; }
+    .glass-card { padding: 3rem !important; }
+}
+
+/* 8. WEATHER ANIMATIONS */
+@keyframes sunRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes sunPulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:.8;transform:scale(1.1);} }
+@keyframes cloudFloat { 0%,100%{transform:translateX(0);}50%{transform:translateX(10px);} }
+@keyframes rainDrop { 0%{transform:translateY(-5px);opacity:0;}30%{opacity:1;}100%{transform:translateY(15px);opacity:0;} }
+@keyframes spin360 { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
+
+.sun-rays { animation: sunRotate 20s linear infinite; transform-origin: center; }
+.sun-core { animation: sunPulse 4s ease-in-out infinite; transform-origin: center; }
+.cloud-float { animation: cloudFloat 6s ease-in-out infinite; }
+.rain-drop-1 { animation: rainDrop 1s ease-in infinite; }
+.rain-drop-2 { animation: rainDrop 1s ease-in 0.3s infinite; }
+.rain-drop-3 { animation: rainDrop 1s ease-in 0.6s infinite; }
+.refreshing { animation: spin360 0.8s linear infinite; }
+
+/* 9. UI COMPONENT STATES */
+.temp-unit-active {
+    background-color: var(--primary);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.search-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(20px);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .search-overlay { padding: 4rem; }
+}
+
+/* Custom Scrollbar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Loading Shimmer */
+.loading-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* Optimized Transitions */
+body {
+    font-family: 'Outfit', sans-serif;
+    /* Use a cubic-bezier for a more "luxurious" feel */
+    transition: background 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+    min-height: 100vh;
+    color: var(--text-main);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    /* Soften the shadow transition */
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+/* Add a subtle entrance for cards */
+.animate-in {
+    animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes slideUpFade {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Smooth Hover Effects */
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Smoother Overlay */
+.search-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(15, 23, 42, 0);
+    backdrop-filter: blur(0px);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.search-overlay.active {
+    display: block; /* Managed by JS fadeIn, but this keeps logic clean */
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    pointer-events: auto;
+}

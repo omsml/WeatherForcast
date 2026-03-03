@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyView – Global Weather Intelligence</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="p-4 md:p-8 dark:bg-[#0b131e]">
+
+    <div id="search-overlay" class="search-overlay animate__animated animate__fadeIn">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-between mb-10">
+                <button onclick="closeSearch()" class="text-white flex items-center gap-3 font-bold uppercase text-xs tracking-[0.2em] hover:text-blue-400 transition-colors">
+                    <i class="fas fa-arrow-left"></i> Return to Dashboard
+                </button>
+                <span class="text-blue-500 font-black text-sm uppercase tracking-widest" id="res-count">Worldwide Discovery</span>
+            </div>
+            <div id="results-stack" class="grid gap-4">
+                </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto">
+        <nav class="glass-card rounded-[2.5rem] p-4 mb-10 flex items-center justify-between">
+            <div class="flex items-center gap-3 px-4">
+                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-600/40">
+                    <i class="fas fa-globe-americas text-white animate-pulse"></i>
+                </div>
+                <h1 class="text-2xl font-black tracking-tighter">SkyView</h1>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-2">
+                <button onclick="switchMode('dashboard')" class="px-6 py-2 rounded-2xl text-sm font-bold bg-blue-600 text-white transition-all shadow-lg shadow-blue-600/20">Global Dashboard</button>
+                <button class="px-6 py-2 rounded-2xl text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-white/10 transition-all">Climate Maps</button>
+                <button class="px-6 py-2 rounded-2xl text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-white/10 transition-all">Forecast Analysis</button>
+            </div>
+
+            <div class="flex items-center gap-3 px-4">
+                <button id="theme-toggle" class="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+                <button onclick="location.reload()" class="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all">
+                    <i class="fas fa-sync-alt" id="refresh-icon"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div class="max-w-2xl mx-auto mb-12">
+            <form id="global-search-form" class="relative group">
+                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="city-input" placeholder="Enter any city or coordinate globally..." 
+                    class="w-full glass-card rounded-[2rem] py-6 pl-16 pr-36 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all font-semibold text-lg placeholder:text-slate-400">
+                <button type="submit"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-[1.2rem] font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-600/30">
+                    Search
+                </button>
+            </form>
+        </div>
+
+        <div id="weather-info" class="animate__animated animate__fadeInUp">
+            <div class="grid lg:grid-cols-3 gap-10">
+                
+                <div class="lg:col-span-2 space-y-10">
+                    <section class="glass-card rounded-[3.5rem] p-8 md:p-14 relative overflow-hidden group">
+                        <div id="dynamic-glow" class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 blur-[100px] transition-all duration-1000"></div>
+
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between gap-12">
+                            <div class="space-y-10">
+                                <div>
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="px-3 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-[0.2em]" id="loc-country">--</div>
+                                        <h2 id="city-name" class="text-5xl md:text-7xl font-black tracking-tighter">New York</h2>
+                                    </div>
+                                    <p id="date-time" class="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-[0.1em]">Saturday, Feb 28 2026</p>
+                                </div>
+
+                                <div class="flex items-end gap-8">
+                                    <div id="temperature" class="text-[9rem] md:text-[11rem] font-black leading-none tracking-tighter">--</div>
+                                    <div class="flex flex-col gap-3 mb-10">
+                                        <div class="flex bg-slate-200/50 dark:bg-slate-800/50 p-1.5 rounded-2xl border border-white/10">
+                                            <button onclick="setGlobalUnit('metric')" id="u-metric" class="px-5 py-2.5 rounded-xl text-xs font-black transition-all temp-unit-active">°C</button>
+                                            <button onclick="setGlobalUnit('imperial')" id="u-imperial" class="px-5 py-2.5 rounded-xl text-xs font-black transition-all text-slate-500 hover:text-blue-500">°F</button>
+                                        </div>
+                                        <p class="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Feels <span id="feels-like">--</span>°</p>
+                                    </div>
+                                </div>
+
+                                <div class="inline-flex items-center gap-3 px-8 py-4 bg-blue-600/10 border border-blue-600/20 rounded-[2rem] w-fit shadow-inner">
+                                   <div id="condition-icon-small" class="scale-125"></div>
+                                   <span id="description" class="font-black text-blue-600 dark:text-blue-400 capitalize text-base">Clear Sky</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col items-center justify-center md:items-end">
+                                <div id="hero-animated-icon" class="scale-[2] md:scale-[3.2] md:mr-24 py-20">
+                                    </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="space-y-6">
+                        <div class="flex items-center justify-between px-4">
+                            <h3 class="text-2xl font-black tracking-tighter">Worldwide Outlook</h3>
+                            <div class="h-px bg-slate-200 dark:bg-slate-800 flex-1 mx-6 opacity-30"></div>
+                        </div>
+                        <div id="forecast-grid" class="grid grid-cols-2 md:grid-cols-5 gap-5">
+                            </div>
+                    </section>
+                </div>
+
+                <div class="space-y-10">
+                    <section class="glass-card rounded-[3.5rem] p-12 h-full flex flex-col justify-between">
+                        <div class="space-y-12">
+                            <h3 class="text-3xl font-black tracking-tighter">Environment</h3>
+                            
+                            <div class="space-y-8">
+                                <div class="group">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-[1.2rem] bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+                                                <i class="fas fa-droplet text-lg"></i>
+                                            </div>
+                                            <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Humidity</span>
+                                        </div>
+                                        <span id="humidity" class="text-2xl font-black tracking-tighter">--%</span>
+                                    </div>
+                                    <div class="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                        <div id="hum-bar" class="h-full bg-blue-500 transition-all duration-1000" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="group">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-[1.2rem] bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
+                                                <i class="fas fa-wind text-lg"></i>
+                                            </div>
+                                            <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Wind</span>
+                                        </div>
+                                        <span id="wind-speed" class="text-2xl font-black tracking-tighter">--</span>
+                                    </div>
+                                </div>
+
+                                <div class="group">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-[1.2rem] bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all duration-500">
+                                                <i class="fas fa-sun text-lg"></i>
+                                            </div>
+                                            <span class="text-xs font-black text-slate-400 uppercase tracking-widest">AQI Score</span>
+                                        </div>
+                                        <span id="aqi-val" class="text-2xl font-black tracking-tighter">--</span>
+                                    </div>
+                                </div>
+
+                                <div class="pt-10 flex gap-10 border-t border-slate-200 dark:border-slate-800">
+                                    <div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Sunrise</p>
+                                        <p id="sunrise-time" class="font-black text-lg">--:--</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Sunset</p>
+                                        <p id="sunset-time" class="font-black text-lg">--:--</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-16 text-center opacity-40 hover:opacity-100 transition-opacity">
+                            <i class="fas fa-earth-americas text-4xl mb-4"></i>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Worldwide Weather Sync</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-24 py-12 text-center">
+        <div class="flex items-center justify-center gap-6 mb-6 text-slate-400">
+            <a href="https://github.com/omsml" target="_blank">
+            <i class="fab fa-github text-xl cursor-pointer hover:text-blue-500 transition-all"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/omm-prakash-samal" target="_blank">
+            <i class="fab fa-linkedin text-xl cursor-pointer hover:text-blue-500 transition-all"></i>
+            </a>
+            <a href="mailto:ommsamalommsamal@gmail.com">
+            <i class="fas fa-envelope text-xl cursor-pointer hover:text-blue-500 transition-all"></i>
+            </a>
+        </div>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">@SkyView Intelligence System 2026 • All rights reserved by omsml</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
